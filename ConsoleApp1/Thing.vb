@@ -2,9 +2,14 @@ Imports DeveloperCore.DependencyInjection
 
 Public Class Thing
     <Inject>
-    Public Property Controller As ITest
+    Public Property Counter As Counter
+    Private ReadOnly _controller As ITest
+
+    Public Sub New(controller As ITest)
+        _controller = controller
+    End Sub
 
     Public Sub Hi()
-        Controller.Hi()
+        _controller.Hi()
     End Sub
 End Class

@@ -1,15 +1,14 @@
-﻿Public Class ConsoleTest
+﻿Imports DeveloperCore.DependencyInjection
+
+Public Class ConsoleTest
     Implements ITest
 
-    Private ReadOnly _counter As Counter
-
-    Public Sub New(counter As Counter)
-        _counter = counter
-    End Sub
+    <Inject>
+    Public Property Counter As Counter
 
     Public Sub Hi() Implements ITest.Hi
-        _counter.Increment()
+        Counter.Increment()
         Console.WriteLine("Hi")
-        Console.WriteLine(_counter.Count)
+        Console.WriteLine(Counter.Count)
     End Sub
 End Class

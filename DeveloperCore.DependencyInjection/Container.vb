@@ -36,19 +36,19 @@ Public Class Container
         If _services.ContainsKey(type) Then
             Dim service = _services(type)
             If service.Type = ServiceType.Transient Then
-                value = Resolve(service.ServiceType, scoped)
+                value = Create(service.ServiceType, scoped)
             ElseIf service.Type = ServiceType.Scoped Then
                 If scoped.ContainsKey(type) Then
                     value = scoped(type)
                 Else
-                    value = Resolve(service.ServiceType, scoped)
+                    value = Create(service.ServiceType, scoped)
                     scoped.Add(type, value)
                 End If
             ElseIf service.Type = ServiceType.Singleton Then
                 If _singletons.ContainsKey(type) Then
                     value = _singletons(type)
                 Else
-                    value = Resolve(service.ServiceType, scoped)
+                    value = Create(service.ServiceType, scoped)
                     _singletons.TryAdd(type, value)
                 End If
             End If
@@ -56,19 +56,21 @@ Public Class Container
         Return value
     End Function
 
-    Friend Function Resolve(service As Type, scoped As Dictionary(Of Type, Object)) As Object
+    Friend Function Create(service As Type, scoped As Dictionary(Of Type, Object)) As Object
         Dim constructor As ConstructorInfo = service.GetConstructors().First()
         Dim parameters As ParameterInfo() = constructor.GetParameters()
         Dim parameterValues As List(Of Object) = parameters.Select(Function(x) GetService(x.ParameterType, scoped)).ToList()
-        Return Activator.CreateInstance(service, parameterValues.ToArray())
+        Dim instance As Object = Activator.CreateInstance(service, parameterValues.ToArray())
+        Inject(instance)
+        Return instance
     End Function
     
-    Public Function Resolve(Of T) As T
-        Return Resolve(GetType(T))
+    Public Function Create(Of T) As T
+        Return Create(GetType(T))
     End Function
     
-    Public Function Resolve(service As Type) As Object
-        Return Resolve(service, New Dictionary(Of Type, Object)())
+    Public Function Create(service As Type) As Object
+        Return Create(service, New Dictionary(Of Type, Object)())
     End Function
     
     Public Sub Inject(obj As Object)
