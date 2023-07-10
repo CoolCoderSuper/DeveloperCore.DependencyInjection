@@ -2,13 +2,13 @@ Imports DeveloperCore.DependencyInjection
 
 Public Module Program
     Public Sub Main()
-        Services.AddTransient(Of ITest, ConsoleTest)()
-        Services.AddScoped(Of Counter)()
+        Container.Shared.AddTransient(Of ITest, ConsoleTest)()
+        Container.Shared.AddScoped(Of Counter)()
         Dim thing As New Thing
-        thing.CreateServices()
+        Container.Shared.Inject(thing)
         thing.Hi()
         Dim thing1 As New Thing
-        thing1.CreateServices()
+        Container.Shared.Inject(thing1)
         thing1.Hi()
     End Sub
 End Module
